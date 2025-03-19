@@ -70,3 +70,30 @@ echo "Exiting..."
 
 exit 0
 ```
+
+3. ![test_monitor.service](./test_monitor.service)
+
+Были написаны `systemd` сервис:
+
+```service
+[Unit]
+Description=Monitoring test process
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/test_monitor.sh
+```
+
+и `timer`:
+```service
+[Unit]
+Description=Run test_monitor.service each minute
+
+[Timer]
+Unit=test_monitor.service
+OnCalendar=*-*-* *:*:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
