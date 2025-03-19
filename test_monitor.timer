@@ -2,6 +2,7 @@
 Description=Run test_monitor.service each minute
 
 [Timer]
+Unit=test_monitor.service
 OnCalendar=*-*-* *:*:00
 Persistent=true
 
