@@ -1,5 +1,5 @@
 # monitoring
-Мониторинг процесса
+Мониторинг процесса, переданного через аргумент командной строки
 
 1. ![inf_loop.c](./inf_loop.c)
 
@@ -73,7 +73,7 @@ exit 0
 
 3. ![test_monitor.service](./test_monitor.service)
 
-Были написаны `systemd` сервис:
+Были написаны `systemd` unit:
 
 ```service
 [Unit]
