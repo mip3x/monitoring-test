@@ -24,4 +24,49 @@ int main() {
 
 2. ![test_monitor.sh](./test_monitor.sh)
    
-Затем был написан скрипт, который проверяет, существует ли процесс с именем, совпадающим с первым переданным при запуске скрипта аргументом
+Затем был написан скрипт, который проверяет, существует ли процесс с именем, совпадающим с первым переданным при запуске скрипта аргументом: сф помощью `pgrep` происходит поиск по имени процесса. Если `pid` не найден, то это пишется в файл лога, если найден, сравнивается с `pid` процесса из файла `stored_pid`: если они НЕ равны, то это означает, что процесс был перезапущен, и сообщение об этом также добавляется в файл лога. Затем `current_pid` сохраняется в файл `stored_pid`.
+
+Затем, в течение 5 секунд происходит попытка получить ответ от сервиса по `MONITOR_URL` с помощью `curl`. Если не удалось, то это пишется также в файл лога. Если удалось, то просто выводится в консоль.
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <process_name>"
+    exit 1
+fi
+
+PROCESS_NAME="$1"
+LOG_FILE="/var/log/monitoring.log"
+
+MONITOR_URL="https://test.com/monitoring/test/api"
+# MONITOR_URL="localhost:8081/health" # test URL
+
+PID_FILE="/tmp/test_monitor_${PROCESS_NAME}.pid"
+
+current_pid=$(pgrep -x "$PROCESS_NAME")
+
+if [ -z "$current_pid" ]; then
+    echo "$(date): Process '$PROCESS_NAME' is not running"
+    exit 0
+fi
+
+if [ -f "$PID_FILE" ]; then
+    stored_pid=$(cat "$PID_FILE")
+    if [ "$stored_pid" != "$current_pid" ]; then
+        echo "$(date): Process '$PROCESS_NAME' restarted. New PID: $current_pid" >> "$LOG_FILE"
+    fi
+fi
+echo "$current_pid" > "$PID_FILE"
+
+curl --max-time 5 --silent --fail "$MONITOR_URL" > /dev/null
+if [ $? -ne 0 ]; then
+    echo "$(date): Monitoring server $MONITOR_URL is not available" >> "$LOG_FILE"
+else
+    echo "$(date): Success sending request to $MONITOR_URL"
+fi
+
+echo "Exiting..."
+
+exit 0
+```
