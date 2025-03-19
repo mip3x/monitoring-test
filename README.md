@@ -99,6 +99,15 @@ WantedBy=timers.target
 ```
 
 Для запуска `systemd` unit:
-1. Необходимо прочитать новые `systemd` файлы (их нужно записать по путям `/etc/systemd/system/test_monitor.service` и `/etc/systemd/system/test_monitor.timer` соответственно): `systemctl daemon-reload`
-2. Включить таймер на автозапуск при старте системы: `systemctl enable test_monitor.timer`
-3. Запустить таймер (работа сервиса начнётся после запуска команды): `systemctl start test_monitor.timer`
+1. Необходимо прочитать новые `systemd` файлы (их нужно записать по путям `/etc/systemd/system/test_monitor.service` и `/etc/systemd/system/test_monitor.timer` соответственно):
+```bash
+systemctl daemon-reload
+```
+3. Включить таймер на автозапуск при старте системы:
+```bash
+systemctl enable test_monitor.timer
+```
+5. Запустить таймер (работа сервиса начнётся после запуска команды):
+```bash
+systemctl start test_monitor.timer
+```
